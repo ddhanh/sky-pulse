@@ -1,0 +1,249 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 10%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 187 100% 50%;
+    --primary-foreground: 222 47% 6%;
+
+    --secondary: 222 30% 15%;
+    --secondary-foreground: 210 40% 90%;
+
+    --muted: 222 30% 12%;
+    --muted-foreground: 215 20% 55%;
+
+    --accent: 187 80% 40%;
+    --accent-foreground: 210 40% 98%;
+
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 222 30% 18%;
+    --input: 222 30% 15%;
+    --ring: 187 100% 50%;
+
+    --radius: 0.75rem;
+
+    /* Custom aviation theme tokens */
+    --radar-glow: 187 100% 50%;
+    --radar-pulse: 187 80% 60%;
+    --altitude-low: 38 92% 50%;
+    --altitude-mid: 142 76% 45%;
+    --altitude-high: 187 100% 50%;
+    --holding-pattern: 280 80% 60%;
+    --ground: 38 50% 40%;
+
+    /* Gradients */
+    --gradient-radar: linear-gradient(135deg, hsl(187 100% 50% / 0.2), hsl(187 80% 40% / 0.05));
+    --gradient-card: linear-gradient(180deg, hsl(222 47% 10%), hsl(222 47% 6%));
+    --gradient-hero: linear-gradient(180deg, hsl(222 47% 8%), hsl(222 47% 4%));
+
+    /* Shadows */
+    --shadow-glow: 0 0 30px hsl(187 100% 50% / 0.3);
+    --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.3);
+    --shadow-elevated: 0 8px 40px hsl(0 0% 0% / 0.5);
+
+    --sidebar-background: 222 47% 6%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 187 100% 50%;
+    --sidebar-primary-foreground: 222 47% 6%;
+    --sidebar-accent: 222 30% 15%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 30% 18%;
+    --sidebar-ring: 187 100% 50%;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .radar-grid {
+    background-image: 
+      linear-gradient(hsl(var(--border)) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .radar-pulse {
+    animation: radar-pulse 3s ease-out infinite;
+  }
+
+  @keyframes radar-pulse {
+    0% {
+      box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 20px hsl(var(--primary) / 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+    }
+  }
+
+  .glow-text {
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+  }
+
+  .stat-card {
+    @apply relative overflow-hidden rounded-xl border border-border bg-card p-6;
+    background: var(--gradient-card);
+  }
+
+  .stat-card::before {
+    content: '';
+    @apply absolute inset-0 opacity-50;
+    background: var(--gradient-radar);
+  }
+
+  .aircraft-marker {
+    @apply transition-transform duration-300 ease-out;
+  }
+
+  .aircraft-marker:hover {
+    @apply scale-125;
+    filter: drop-shadow(0 0 8px hsl(var(--primary)));
+  }
+
+  .data-value {
+    @apply font-mono text-2xl font-bold tracking-tight;
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  .flight-row {
+    @apply transition-colors duration-200;
+  }
+
+  .flight-row:hover {
+    @apply bg-secondary/50;
+  }
+
+  .status-on-time {
+    @apply text-success;
+  }
+
+  .status-delayed {
+    @apply text-warning;
+  }
+
+  .status-severe {
+    @apply text-destructive;
+  }
+
+  .leaflet-container {
+    @apply bg-background;
+  }
+
+  .leaflet-tile-pane {
+    filter: brightness(0.6) contrast(1.1) saturate(0.8);
+  }
+
+  .leaflet-control-zoom a {
+    @apply bg-card text-foreground border-border;
+  }
+
+  .leaflet-control-zoom a:hover {
+    @apply bg-secondary;
+  }
+
+  .search-input {
+    @apply bg-secondary/50 border-border focus:border-primary focus:ring-primary/30;
+  }
+
+  .nav-link {
+    @apply relative px-4 py-2 text-sm font-medium text-muted-foreground transition-colors;
+  }
+
+  .nav-link:hover {
+    @apply text-foreground;
+  }
+
+  .nav-link.active {
+    @apply text-primary;
+  }
+
+  .nav-link.active::after {
+    content: '';
+    @apply absolute bottom-0 left-0 right-0 h-0.5 bg-primary;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out;
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}

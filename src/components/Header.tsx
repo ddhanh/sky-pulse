@@ -47,21 +47,19 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
-          <Link
-            to="/airports"
-            className="flex items-center gap-2 rounded-lg border border-border bg-secondary/50 px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          >
-            <Search className="h-4 w-4" />
-            <span className="hidden sm:inline">Search airports...</span>
-          </Link>
-          <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
-            </span>
-            LIVE
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
+              </span>
+              LIVE
+            </div>
           </div>
+          <span className="text-[10px] text-muted-foreground font-mono">
+            Data refreshes every 30 seconds • {new Date().toLocaleTimeString()}
+          </span>
         </div>
       </div>
     </header>

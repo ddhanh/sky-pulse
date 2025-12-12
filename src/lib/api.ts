@@ -201,35 +201,93 @@ export async function fetchWeather(lat: number, lon: number): Promise<WeatherDat
 }
 
 // Mock data generators for fallback
+// Major airport locations for realistic mock data
+const MAJOR_AIRPORTS = [
+  { icao: "KJFK", lat: 40.6413, lon: -73.7781, weight: 1.0 },
+  { icao: "EGLL", lat: 51.4700, lon: -0.4543, weight: 0.95 },
+  { icao: "LFPG", lat: 49.0097, lon: 2.5479, weight: 0.9 },
+  { icao: "EDDF", lat: 50.0379, lon: 8.5622, weight: 0.85 },
+  { icao: "EHAM", lat: 52.3105, lon: 4.7683, weight: 0.8 },
+  { icao: "KLAX", lat: 33.9416, lon: -118.4085, weight: 0.95 },
+  { icao: "RJTT", lat: 35.5494, lon: 139.7798, weight: 0.85 },
+  { icao: "VHHH", lat: 22.3080, lon: 113.9185, weight: 0.8 },
+  { icao: "WSSS", lat: 1.3644, lon: 103.9915, weight: 0.75 },
+  { icao: "OMDB", lat: 25.2532, lon: 55.3657, weight: 0.8 },
+  { icao: "KORD", lat: 41.9742, lon: -87.9073, weight: 0.9 },
+  { icao: "KATL", lat: 33.6407, lon: -84.4277, weight: 0.95 },
+  { icao: "ZBAA", lat: 40.0799, lon: 116.6031, weight: 0.85 },
+  { icao: "KSFO", lat: 37.6213, lon: -122.3790, weight: 0.8 },
+  { icao: "LEMD", lat: 40.4983, lon: -3.5676, weight: 0.75 },
+];
+
 function generateMockStates(): AircraftState[] {
   const states: AircraftState[] = [];
-  const airlines = ["AAL", "UAL", "DAL", "SWA", "BAW", "DLH", "AFR", "KLM", "JAL", "ANA"];
+  const airlines = ["AAL", "UAL", "DAL", "SWA", "BAW", "DLH", "AFR", "KLM", "JAL", "ANA", "CPA", "SIA", "QFA", "EK"];
   
-  for (let i = 0; i < 200; i++) {
-    const lat = (Math.random() - 0.5) * 140 + 20;
-    const lon = (Math.random() - 0.5) * 300;
-    const onGround = Math.random() < 0.1;
+  // Generate aircraft near each major airport
+  for (const airport of MAJOR_AIRPORTS) {
+    // Number of aircraft near this airport varies by weight (traffic volume)
+    const numAircraft = Math.floor(8 + Math.random() * 25 * airport.weight);
     
-    states.push({
-      icao24: Math.random().toString(16).substr(2, 6),
-      callsign: `${airlines[Math.floor(Math.random() * airlines.length)]}${Math.floor(Math.random() * 9000 + 1000)}`,
-      origin_country: ["United States", "United Kingdom", "Germany", "France", "Japan"][Math.floor(Math.random() * 5)],
-      time_position: Date.now() / 1000,
-      last_contact: Date.now() / 1000,
-      longitude: lon,
-      latitude: lat,
-      baro_altitude: onGround ? 0 : Math.random() * 12000 + 1000,
-      on_ground: onGround,
-      velocity: onGround ? Math.random() * 30 : Math.random() * 250 + 150,
-      true_track: Math.random() * 360,
-      vertical_rate: onGround ? 0 : (Math.random() - 0.5) * 20,
-      sensors: null,
-      geo_altitude: onGround ? 0 : Math.random() * 12000 + 1000,
-      squawk: Math.floor(Math.random() * 7777).toString().padStart(4, "0"),
-      spi: false,
-      position_source: 0,
-      category: Math.floor(Math.random() * 4),
-    });
+    for (let i = 0; i < numAircraft; i++) {
+      // Random position within ~80km of airport
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = Math.random() * 0.7; // ~0.7 degrees ≈ ~70-80km
+      const lat = airport.lat + Math.sin(angle) * distance;
+      const lon = airport.lon + Math.cos(angle) * distance;
+      
+      // Determine flight state
+      const rand = Math.random();
+      const onGround = rand < 0.15;
+      const isHolding = !onGround && rand < 0.25; // Some aircraft in holding patterns
+      const isApproaching = !onGround && !isHolding && rand < 0.5;
+      
+      let altitude: number;
+      let velocity: number;
+      let verticalRate: number;
+      
+      if (onGround) {
+        altitude = 0;
+        velocity = Math.random() * 30;
+        verticalRate = 0;
+      } else if (isHolding) {
+        // Holding pattern: low altitude, slow speed
+        altitude = Math.random() * 1500 + 1000; // 1000-2500m
+        velocity = Math.random() * 50 + 80; // 80-130 m/s
+        verticalRate = (Math.random() - 0.5) * 3;
+      } else if (isApproaching) {
+        // Approaching: descending
+        altitude = Math.random() * 3000 + 500;
+        velocity = Math.random() * 80 + 100;
+        verticalRate = -(Math.random() * 8 + 2);
+      } else {
+        // Departing or cruising nearby
+        altitude = Math.random() * 8000 + 3000;
+        velocity = Math.random() * 150 + 150;
+        verticalRate = Math.random() * 10;
+      }
+      
+      states.push({
+        icao24: Math.random().toString(16).substr(2, 6),
+        callsign: `${airlines[Math.floor(Math.random() * airlines.length)]}${Math.floor(Math.random() * 9000 + 1000)}`,
+        origin_country: ["United States", "United Kingdom", "Germany", "France", "Japan", "China", "UAE", "Singapore"][Math.floor(Math.random() * 8)],
+        time_position: Date.now() / 1000,
+        last_contact: Date.now() / 1000,
+        longitude: lon,
+        latitude: lat,
+        baro_altitude: altitude,
+        on_ground: onGround,
+        velocity: velocity,
+        true_track: Math.random() * 360,
+        vertical_rate: verticalRate,
+        sensors: null,
+        geo_altitude: altitude,
+        squawk: Math.floor(Math.random() * 7777).toString().padStart(4, "0"),
+        spi: false,
+        position_source: 0,
+        category: Math.floor(Math.random() * 4),
+      });
+    }
   }
   
   return states;

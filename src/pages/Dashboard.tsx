@@ -104,7 +104,7 @@ export default function Dashboard() {
       
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <div className="relative mb-8 rounded-2xl border border-border bg-card overflow-hidden">
+        <div className="relative mb-8 rounded-2xl border border-border bg-card">
           <div className="absolute inset-0 radar-grid opacity-30" />
           <div className="relative p-8 md:p-12">
             <div className="max-w-2xl">
@@ -189,18 +189,12 @@ export default function Dashboard() {
                       outerRadius={70}
                       paddingAngle={2}
                       dataKey="value"
+                      isAnimationActive={false}
                     >
                       {altitudeData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                        <Cell key={`cell-${index}`} fill={entry.color} style={{ cursor: 'default' }} />
                       ))}
                     </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "hsl(222, 47%, 8%)",
-                        border: "1px solid hsl(222, 30%, 18%)",
-                        borderRadius: "8px",
-                      }}
-                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
